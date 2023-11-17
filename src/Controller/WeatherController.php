@@ -24,3 +24,5 @@ public function city(Location $location, MeasurementRepository $repository): Res
 }
 
 }
+
+

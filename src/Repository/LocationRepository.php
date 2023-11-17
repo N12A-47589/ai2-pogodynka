@@ -21,6 +21,23 @@ class LocationRepository extends ServiceEntityRepository
         parent::__construct($registry, Location::class);
     }
 
+<<<<<<< Updated upstream
+=======
+    public function findOneByCity(string $city, ?string $country = null): ?Location
+    {
+        $qb = $this->createQueryBuilder('l');
+        $qb->where('LOWER(l.city) = LOWER(:city)')
+            ->setParameter('city', $city);
+        if ($country !== null) {
+            $qb->andWhere('LOWER(l.country) = LOWER(:country)')
+                ->setParameter('country', $country);
+        }
+        $query = $qb->getQuery();
+        return $query->getOneOrNullResult();
+    }
+
+
+>>>>>>> Stashed changes
 //    /**
 //     * @return Location[] Returns an array of Location objects
 //     */
