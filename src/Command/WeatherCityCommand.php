@@ -8,59 +8,42 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'weather:location',
-    description: 'Add a short description for your command',
+    name: 'weather:city',
+    description: 'Displays measurements for city in country',
 )]
-class WeatherLocationCommand extends Command
+class WeatherCityCommand extends Command
 {
     public function __construct(
         private readonly LocationRepository $locationRepository,
-        private readonly WeatherUtil        $weatherUtil,
-        string                              $name = null,
+        private readonly WeatherUtil $weatherUtil,
+        string $name = null,
     )
     {
         parent::__construct($name);
     }
 
-
     protected function configure(): void
     {
         $this
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+            ->addArgument('country_code', InputArgument::REQUIRED, 'Country code [eg. PL]')
+            ->addArgument('city_name', InputArgument::REQUIRED, 'City name [eg. Szczecin]')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
+        $countryCode = $input->getArgument('country_code');
+        $cityName = $input->getArgument('city_name');
 
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
-
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
-
-        return Command::SUCCESS;
-    }
-
-    protected function execute(InputInterface $input,
-                               OutputInterface $output
-                                ): int
-    {
-        $io = new SymfonyStyle($input, $output);
-        $locationId = $input->getArgument('id');
-        $location = $this->locationRepository->find($locationId);
+        $location = $this->locationRepository->findOneBy([
+            'country' => $countryCode,
+            'city' => $cityName,
+        ]);
 
         $measurements = $this->weatherUtil->getWeatherForLocation($location);
         $io->writeln(sprintf('Location: %s', $location->getCity()));
@@ -73,5 +56,4 @@ class WeatherLocationCommand extends Command
 
         return Command::SUCCESS;
     }
-
 }
