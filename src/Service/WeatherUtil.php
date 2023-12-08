@@ -35,8 +35,10 @@ class WeatherUtil
             'city' => $city,
         ]);
 
-        $measurements = $this->getWeatherForLocation($location);
+        if ($location === null) {
+            return [];
+        }
 
-        return $measurements;
+        return $this->getWeatherForLocation($location);
     }
 }
